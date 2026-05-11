@@ -1,0 +1,32 @@
+from core.tools import BaseTool
+
+
+class CalculatorTool(BaseTool):
+
+    name = "calculator"
+
+    description = "Perform basic math calculations"
+
+    def run(self, expression: str):
+
+        return eval(expression)
+
+    def schema(self):
+
+        return {
+            "type": "function",
+            "function": {
+                "name": self.name,
+                "description": self.description,
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "expression": {
+                            "type": "string",
+                            "description": "Math expression"
+                        }
+                    },
+                    "required": ["expression"]
+                }
+            }
+        }
