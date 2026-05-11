@@ -1,6 +1,8 @@
 import json
 
+from core.events import RuntimeEvent
 from core.messages import Message
+from core.state import AgentState
 
 
 class SimpleAgent:
@@ -13,9 +15,20 @@ class SimpleAgent:
         self.llm = llm_client
         self.tool_registry = tool_registry
 
+    def emit_event(self,
+                   event_type,
+                   data):
+        event = RuntimeEvent(
+            type=event_type,
+            data=data
+        )
+        print(event.model_dump_json())
+
     def run(self, user_input: str):
 
-        messages = [
+        state = AgentState()
+
+        state.messages.extend([
             Message(
                 role="system",
                 content="You are a helpful AI investment assistant."
@@ -24,51 +37,103 @@ class SimpleAgent:
                 role="user",
                 content=user_input
             )
-        ]
+        ])
 
-        while True:
+        while not state.finished:
 
-            response = self.llm.chat(
-                messages=messages,
-                tools=self.tool_registry.get_tool_schemas()
+            # Iteration Protection
+            if(state.iteration_count >= state.max_iterations):
+                state.error = (
+                    "Max iterations exceeded"
+                )
+                break
+
+            state.iteration_count += 1
+
+            self.emit_event(
+                "llm_start",
+                {
+                    "iteration": state.iteration_count
+                }
             )
 
-            msg = response.choices[0].message
-
-            # 1. Tool Calling
-            if msg.tool_calls:
-
-                messages.append(
-                    Message(
-                        role="assistant",
-                        content=msg.content or ""
-                    )
+            try:
+                response = self.llm.chat(
+                    messages=state.messages,
+                    tools=self.tool_registry.get_tool_schemas()
                 )
 
-                for tool_call in msg.tool_calls:
+                msg = response.choices[0].message
 
-                    tool_name = tool_call.function.name
+                # Tool Calling
+                if msg.tool_calls:
 
-                    args = json.loads(
-                        tool_call.function.arguments
-                    )
-
-                    tool = self.tool_registry.get_tool(
-                        tool_name
-                    )
-
-                    result = tool.run(**args)
-
-                    messages.append(
+                    state.messages.append(
                         Message(
-                            role="tool",
-                            content=str(result),
-                            tool_call_id=tool_call.id,
-                            name=tool_name
+                            role="assistant",
+                            content=msg.content or ""
                         )
                     )
 
-                continue
+                    for tool_call in msg.tool_calls:
 
-            # 2. Final Answer
-            return msg.content
+                        tool_name = tool_call.function.name
+
+                        args = json.loads(
+                            tool_call.function.arguments
+                        )
+
+                        tool = self.tool_registry.get_tool(
+                            tool_name
+                        )
+
+                        if not tool:
+                            continue
+
+                        self.emit_event(
+                            "tool_start",
+                            {
+                                "tool": tool_name,
+                                "args": args
+                            }
+                        )
+
+                        result = tool.run(**args)
+
+                        self.emit_event(
+                            "tool_end",
+                            {
+                                "tool": tool_name,
+                                "success": result.success
+                            }
+                        )
+
+                        if result.success:
+                            tool_content = str(result.content)
+                        else:
+                            tool_content = (f"Tool Error: {result.error}")
+
+                        state.messages.append(
+                            Message(
+                                role="tool",
+                                content=tool_content,
+                                tool_call_id=tool_call.id,
+                                name=tool_name
+                            )
+                        )
+
+                    continue
+
+                # Final Answer
+                state.finished = True
+                return msg.content
+            except Exception as e:
+                state.error = str(e)
+                self.emit_event(
+                    "runtime_error",
+                    {
+                        "error": str(e)
+                    }
+                )
+                break
+        return f"Agent failed: {state.error}"

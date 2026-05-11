@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
+from core.tool_result import ToolResult
+
 
 class BaseTool(ABC):
 
@@ -8,7 +10,7 @@ class BaseTool(ABC):
     description: str
 
     @abstractmethod
-    def run(self, **kwargs) -> Any:
+    def run(self, **kwargs) -> ToolResult:
         pass
 
     @abstractmethod

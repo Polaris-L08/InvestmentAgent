@@ -21,8 +21,9 @@ registry.register(
 
 
 llm = LLMClient(
-    api_key=os.getenv("OPENAI_API_KEY"),
-    model="gpt-4.1-mini"
+    api_key=os.getenv("LLM_API_KEY"),
+    model=os.getenv("LLM_MODEL_ID"),
+    url=os.getenv("LLM_BASE_URL")
 )
 
 
