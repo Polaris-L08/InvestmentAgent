@@ -3,13 +3,17 @@ import os
 
 from dotenv import load_dotenv
 
+from core.events import RuntimeEvent
 from core.llm_client import LLMClient
 from core.memory import MemoryManager
 from core.tool_registry import ToolRegistry
 
 from agents.simple_agent import SimpleAgent
+from core.workflow import WorkflowGraph, WorkflowNode, WorkflowEdge
 
 from tools.calculator_tool import CalculatorTool
+from workflows.investment_state import InvestmentState
+from workflows.nodes import research_node, analysis_node, report_node
 
 load_dotenv()
 
@@ -37,11 +41,70 @@ async def main():
         memory_manager=memory
     )
 
-    result = await agent.run(
-        "What is 25 * 48 + 1024?"
+    # result = await agent.run(
+    #     "What is 25 * 48 + 1024?"
+    # )
+    #
+    # print(result)
+    async for event in agent.run_stream(
+        "Explain momentum investing"
+    ):
+        print(event.model_dump())
+        # if event.type == "token":
+        #     print(event.data["token"],
+        #           end="",
+        #           flush=True)
+
+
+# asyncio.run(main())
+
+# 组装workflow
+async def build_workflow():
+    graph = WorkflowGraph()
+
+    graph.add_node(
+        WorkflowNode(
+            "research",
+            research_node
+        )
     )
 
-    print(result)
+    graph.add_node(
+        WorkflowNode(
+            "analysis",
+            analysis_node
+        )
+    )
 
+    graph.add_node(
+        WorkflowNode(
+            "report",
+            report_node
+        )
+    )
 
-asyncio.run(main())
+    graph.add_edge(
+        WorkflowEdge(
+            "research",
+            "analysis"
+        )
+    )
+
+    graph.add_edge(
+        WorkflowEdge(
+            "analysis",
+            "report"
+        )
+    )
+
+    graph.set_start("research")
+
+    state = InvestmentState(
+        query="Should I invest in NVIDIA?"
+    )
+
+    result = await graph.run(state)
+
+    print(result.final_report)
+
+asyncio.run(build_workflow())
