@@ -3,6 +3,7 @@ import json
 from core.events import RuntimeEvent
 from core.messages import Message
 from core.state import AgentState
+from core.tool_validator import ToolValidator
 
 
 class SimpleAgent:
@@ -26,7 +27,7 @@ class SimpleAgent:
         )
         print(event.model_dump_json())
 
-    def run(self, user_input: str):
+    async def run(self, user_input: str):
 
         state = AgentState()
 
@@ -41,10 +42,12 @@ class SimpleAgent:
             )
         ])
 
+        tool_validator = ToolValidator()
+
         while not state.finished:
 
             # Iteration Protection
-            if(state.iteration_count >= state.max_iterations):
+            if state.iteration_count >= state.max_iterations:
                 state.error = (
                     "Max iterations exceeded"
                 )
@@ -62,7 +65,7 @@ class SimpleAgent:
             try:
                 trimmed_messages  = self.memory_manager.trim_messages(state.messages)
 
-                response = self.llm.chat(
+                response = await self.llm.chat(
                     messages=trimmed_messages ,
                     tools=self.tool_registry.get_tool_schemas()
                 )
@@ -102,7 +105,12 @@ class SimpleAgent:
                             }
                         )
 
-                        result = tool.run(**args)
+                        # Tool Parameter Validation
+                        tool_validator.validate(
+                            tool,
+                            args
+                        )
+                        result = await tool.run(**args)
 
                         self.emit_event(
                             "tool_end",
@@ -115,7 +123,7 @@ class SimpleAgent:
                         if result.success:
                             tool_content = str(result.content)
                         else:
-                            tool_content = (f"Tool Error: {result.error}")
+                            tool_content = f"Tool Error: {result.error}"
 
                         state.messages.append(
                             Message(
