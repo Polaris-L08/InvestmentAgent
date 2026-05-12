@@ -1,6 +1,5 @@
 from typing import Optional, Literal
-from pydantic import BaseModel
-
+from pydantic import BaseModel, Field
 
 Role = Literal[
     "system",
@@ -15,3 +14,7 @@ class Message(BaseModel):
     content: str
     tool_call_id: Optional[str] = None
     name: Optional[str] = None
+
+    metadata: dict = Field(
+        default_factory=dict
+    )

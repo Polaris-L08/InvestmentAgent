@@ -23,7 +23,8 @@ registry.register(
 llm = LLMClient(
     api_key=os.getenv("LLM_API_KEY"),
     model=os.getenv("LLM_MODEL_ID"),
-    url=os.getenv("LLM_BASE_URL")
+    url=os.getenv("LLM_BASE_URL"),
+    timeout=os.getenv("LLM_TIMEOUT")
 )
 
 

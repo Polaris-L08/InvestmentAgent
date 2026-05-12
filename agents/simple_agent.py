@@ -10,10 +10,12 @@ class SimpleAgent:
     def __init__(
         self,
         llm_client,
-        tool_registry
+        tool_registry,
+        memory_manager
     ):
         self.llm = llm_client
         self.tool_registry = tool_registry
+        self.memory_manager = memory_manager
 
     def emit_event(self,
                    event_type,
@@ -58,8 +60,10 @@ class SimpleAgent:
             )
 
             try:
+                trimmed_messages  = self.memory_manager.trim_messages(state.messages)
+
                 response = self.llm.chat(
-                    messages=state.messages,
+                    messages=trimmed_messages ,
                     tools=self.tool_registry.get_tool_schemas()
                 )
 

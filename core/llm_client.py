@@ -4,13 +4,14 @@ from core.messages import Message
 
 class LLMClient:
 
-    def __init__(self, api_key: str, model: str, url: str):
+    def __init__(self, api_key: str, model: str, url: str, timeout: int = 60):
 
         self.model = model
 
         self.client = OpenAI(
             api_key=api_key,
-            base_url=url
+            base_url=url,
+            timeout=timeout
         )
 
     def chat(self, messages, tools=None):
