@@ -32,3 +32,26 @@ class LLMClient:
         )
 
         return response
+
+    async def stream_chat(
+            self,
+            messages,
+            tools=None
+    ):
+        stream = (
+            await self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {
+                        "role": m.role,
+                        "content": m.content
+                    }
+                    for m in messages
+                ],
+                tools=tools,
+                stream=True
+            )
+        )
+
+        async for chunk in stream:
+            yield chunk

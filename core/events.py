@@ -7,3 +7,5 @@ class RuntimeEvent(BaseModel):
     type: str
 
     data: Any
+
+    timestamp: float | None = None

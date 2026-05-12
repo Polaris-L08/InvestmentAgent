@@ -1,4 +1,5 @@
 import json
+import time
 
 from core.events import RuntimeEvent
 from core.messages import Message
@@ -149,3 +150,85 @@ class SimpleAgent:
                 )
                 break
         return f"Agent failed: {state.error}"
+
+    async def run_stream(self, user_input: str):
+        state = AgentState()
+
+        state.messages.extend([
+            Message(
+                role="system",
+                content="You are a helpful AI investment assistant."
+            ),
+            Message(
+                role="user",
+                content=user_input
+            )
+        ])
+
+        while not state.finished:
+            if state.iteration_count >= state.max_iterations:
+                yield RuntimeEvent(
+                    type="error",
+                    data={
+                        "message": "Max iterations exceeded"
+                    },
+                    timestamp=time.time()
+                )
+                return
+
+            state.iteration_count += 1
+
+            try:
+                trimmed_messages  = self.memory_manager.trim_messages(state.messages)
+
+                yield RuntimeEvent(
+                    type="llm_start",
+                    data={
+                        "iteration": state.iteration_count
+                    },
+                    timestamp=time.time()
+                )
+
+                stream = self.llm.stream_chat(
+                    messages=trimmed_messages,
+                    tools=self.tool_registry.get_tool_schemas()
+                )
+
+                full_content = ""
+                async for chunk in stream:
+                    delta = chunk.choices[0].delta
+
+                    if delta.content:
+                        full_content += delta.content
+                        yield RuntimeEvent(
+                            type="token",
+                            data={
+                                "token": delta.content
+                            },
+                            timestamp=time.time()
+                        )
+                state.messages.append(
+                    Message(
+                        role="assistant",
+                        content=full_content
+                    )
+                )
+
+                state.finished = True
+                yield RuntimeEvent(
+                    type="final",
+                    data={
+                        "content": full_content
+                    },
+                    timestamp=time.time()
+                )
+
+            except Exception as e:
+                yield RuntimeEvent(
+                    type="error",
+                    data={
+                        "message": str(e)
+                    },
+                    timestamp=time.time()
+                )
+                break
