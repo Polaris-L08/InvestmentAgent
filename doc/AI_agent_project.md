@@ -72,3 +72,20 @@ LLM思考
   ↓
 最终输出
 ```
+
+## Workflow Orchestration —— LangGraph 的核心思想
+初级的Demo中，往往会使用`while True:`循环，来完成一个任务。这种Agent Loop结构有一个很严重的问题就是不可控。另外真实的复杂任务很难用单循环完成。
+
+在LangGraph升级中，引入了Multi-Agent架构，通过多个Agent协同工作，来完成复杂任务。每个Node(阶段)基本对应一个Agent，Agent会根据输入，进行思考，然后选择调用工具，然后调用工具，然后获得结果。
+
+已经非常接近Multi-Agent Orchestrator的结构。但是当前的`state`是共享的，所有Agent使用的同一个state。这样会导致上下文混乱（`Context Pollution`）和内容量的增长。
+
+因此需要进行上下文隔离（`Context Isolation`）。
+
+想要让Agent更加智能，下一步引入`RAG`。
+
+## RAG & Knowledge System Engineering
+
+Agent 的外部认知系统
+
+
