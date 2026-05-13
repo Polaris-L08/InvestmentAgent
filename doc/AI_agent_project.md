@@ -88,4 +88,42 @@ LLM思考
 
 Agent 的外部认知系统
 
+RAG不是简单的搜索，而是上下文构造
 
+```python
+results = await retriever.retrieve(
+    query
+)
+
+context = "\n\n".join([
+    chunk.content
+    for _, chunk in results
+])
+
+prompt = f"""
+Use the following context:
+
+{context}
+
+Question:
+{query}
+"""
+```
+
+## Memory System Engineering
+
+**Agent 的认知架构核心**
+
+Prompt： 决定当前行为
+
+Memory： 决定长期认知
+
+真正工业级 Agent：
+
+必须能够：
+
+ - 记住过去
+ - 形成经验
+ - 压缩知识
+ - 检索历史
+ - 建立长期状态
