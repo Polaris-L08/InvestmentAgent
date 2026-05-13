@@ -1,4 +1,6 @@
 from observability.tracer import Tracer
+from runtime.retry_policy import RetryPolicy
+from runtime.timeout import with_timeout
 
 
 class BaseAgent:
@@ -11,16 +13,23 @@ class BaseAgent:
         self.description = description
         self.llm = llm_client
         self.tracer = Tracer()
+        self.retry_policy = RetryPolicy()
 
     async def run(self,
                   state
                   ):
-        # raise NotImplementedError
         span = self.tracer.start_span(
             self.name
         )
 
-        result = await self._run(state)
+        result = await with_timeout (
+            self.retry_policy.execute(
+                lambda: self._run(
+                    state
+                )
+            ),
+            timeout=30
+        )
 
         span.finish()
 

@@ -132,5 +132,47 @@ Memory： 决定长期认知
 
 会反思的 Agent
 
-## Observability & AI Runtime Monitoring
-AI 系统的可观测性工程
+## Observability & AI Runtime Monitoring —— AI 系统的可观测性工程
+
+因为大模型本身是“黑盒”系统，所以需要引入可观测性。
+
+## Reliability Engineering for AI Systems —— AI 系统稳定性工程
+
+LLM本质是一个概率系统，相同的输入可能导致不同的输出，
+这会导致：
+|问题         |后果|
+|---          |--|
+|随机失败       |不可预测|
+|Tool失败      |Workflow中断|
+|输出漂移       |不稳定|
+|超时          |Runtime阻塞|
+|hallucination|错误结果|
+|token暴涨     |成本失控|
+
+因此AI系统相比较传统系统更加脆弱。
+
+工业系统最重要的是：**可靠性**
+
+可靠性不是指retry,失败了就多试几次。
+而是包含多个维度：
+
+| 维度             | 内容   |
+| -------------- | ---- |
+| Recovery       | 自动恢复 |
+| Isolation      | 故障隔离 |
+| Degradation    | 优雅退化 |
+| Observability  | 可监控  |
+| Predictability | 可预测  |
+| Stability      | 长期稳定 |
+
+
+
+构建基础版块：
+Reliability Runtime V1
+包括：
+ - Retry Policy
+ - Timeout
+ - Fallback Model： 降级执行
+ - Circuit Breaker： 熔断器。 失败太多-> 暂时禁止调用
+ - Failure Recovery
+
