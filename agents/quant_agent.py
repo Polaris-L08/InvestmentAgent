@@ -6,7 +6,7 @@ class QuantAgent(BaseAgent):
     """
     Quant Agent
     """
-    async def run(
+    async def _run(
         self,
         state: SharedState
     ):

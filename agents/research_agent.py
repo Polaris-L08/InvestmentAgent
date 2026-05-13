@@ -6,7 +6,7 @@ class ResearchAgent(BaseAgent):
     """
     Research Agent
     """
-    async def run(
+    async def _run(
         self,
         state: SharedState
     ):

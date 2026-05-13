@@ -3,7 +3,7 @@ from agents.base_agent import BaseAgent
 
 class PlannerAgent(BaseAgent):
 
-    async def run(
+    async def _run(
         self,
         state
     ):
