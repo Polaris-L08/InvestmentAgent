@@ -127,3 +127,7 @@ Memory： 决定长期认知
  - 压缩知识
  - 检索历史
  - 建立长期状态
+
+## Reflection & Self-Improvement Architecture
+
+会反思的 Agent
