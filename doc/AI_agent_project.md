@@ -176,3 +176,31 @@ Reliability Runtime V1
  - Circuit Breaker： 熔断器。 失败太多-> 暂时禁止调用
  - Failure Recovery
 
+## AI Middleware & Runtime Pipeline Architecture —— AI Runtime 中间件体系
+
+随着模型的构建，Runtime会越来越大，越来越复杂：
+```angular2html
+trace
+retry
+timeout
+reflection
+memory
+cache
+guardrail
+rate limit
+cost control
+```
+如果全部放进`run()`函数，函数会非常臃肿，且不易扩展，需要升级成**Pipeline Architecture**
+
+Pipeline本质是一组顺序执行的Runtime阶段,例如：
+```angular2html
+trace
+ ↓
+retry
+ ↓
+timeout
+ ↓
+reflection
+ ↓
+execute
+```

@@ -1,4 +1,5 @@
 from observability.tracer import Tracer
+from runtime.middleware.pipeline import MiddlewarePipeline
 from runtime.retry_policy import RetryPolicy
 from runtime.timeout import with_timeout
 
@@ -7,33 +8,39 @@ class BaseAgent:
     def __init__(
             self,
             name: str,
-    description: str,
-    llm_client):
+            description: str,
+            llm_client,
+            pipeline: MiddlewarePipeline,
+    ):
         self.name = name
         self.description = description
         self.llm = llm_client
-        self.tracer = Tracer()
-        self.retry_policy = RetryPolicy()
+        self.pipeline = pipeline
 
     async def run(self,
                   state
                   ):
-        span = self.tracer.start_span(
-            self.name
-        )
+        # span = self.tracer.start_span(
+        #     self.name
+        # )
+        #
+        # result = await with_timeout(
+        #     self.retry_policy.execute(
+        #         lambda: self._execute(
+        #             state
+        #         )
+        #     ),
+        #     timeout=30
+        # )
+        #
+        # span.finish()
 
-        result = await with_timeout (
-            self.retry_policy.execute(
-                lambda: self._run(
-                    state
-                )
-            ),
-            timeout=30
+        result = await self.pipeline.execute(
+            state,
+            self._execute
         )
-
-        span.finish()
 
         return result
 
-    async def _run(self, state):
+    async def _execute(self, state):
         raise NotImplementedError

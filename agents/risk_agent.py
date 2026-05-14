@@ -3,7 +3,7 @@ from workflows.shared_state import SharedState
 
 
 class RiskAgent(BaseAgent):
-    async def _run(
+    async def _execute(
             self,
             state: SharedState
     ):
