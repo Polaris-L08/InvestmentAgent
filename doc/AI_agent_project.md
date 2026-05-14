@@ -204,3 +204,22 @@ reflection
  ↓
 execute
 ```
+
+## Durable Execution & Checkpoint Runtime —— 持久化 AI Runtime
+
+AI Workflow越来越长周期，需要Durable(持久化)。
+
+使得Runtime可以从崩溃中快速恢复。
+
+现代工业中通过Temporal 、Airflow 、Dagster 、Ray解决。
+
+Temporal的核心思想认为，Workflow是客回复状态机。
+```angular2html
+WorkflowGraph
+    ↓
+WorkflowExecutor
+    ↓
+DurableRuntime
+    ↓
+WorkerRuntime
+```
