@@ -27,5 +27,5 @@ class BaseAgent:
 
         return result
 
-    async def _execute(self, state: SharedState):
+    async def _execute(self, context: AgentContext):
         raise NotImplementedError

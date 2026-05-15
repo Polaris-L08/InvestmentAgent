@@ -107,7 +107,7 @@ async def build_workflow():
         shared_memory=SharedMemory()
     )
 
-    result = await graph.run(state)
+    result = await graph.run(agent_context.state)
 
     print(result.final_report)
 

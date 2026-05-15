@@ -1,7 +1,7 @@
-from pydantic import BaseModel
+from workflows.workflow_base_state import WorkflowBaseState
 
 
-class InvestmentState(BaseModel):
+class InvestmentState(WorkflowBaseState):
 
     query: str
 

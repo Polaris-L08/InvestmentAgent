@@ -1,6 +1,5 @@
-from memory.shared_memory import (
-    SharedMemory
-)
+from memory.shared_memory import SharedMemory
+from workflows.workflow_base_state import WorkflowBaseState
 
 
 class AgentContext:
@@ -13,7 +12,7 @@ class AgentContext:
 
     def __init__(
             self,
-            state,
+            state: WorkflowBaseState,
             shared_memory: SharedMemory
     ):
         self.state = state

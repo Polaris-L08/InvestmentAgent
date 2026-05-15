@@ -3,9 +3,25 @@ import time
 
 from core.events import RuntimeEvent
 from core.messages import Message
-from core.state import AgentState
 from core.tool_validator import ToolValidator
+from pydantic import BaseModel, Field
+from typing import List
 
+class AgentState(BaseModel):
+    """
+    Agent状态
+    """
+    messages: List[Message] = Field(
+        default_factory=list
+    )
+
+    iteration_count: int = 0
+
+    max_iterations: int = 10
+
+    finished: bool = False
+
+    error: str | None = None
 
 class SimpleAgent:
 

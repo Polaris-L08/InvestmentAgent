@@ -1,5 +1,5 @@
 from agents.base_agent import BaseAgent
-from workflows.shared_state import SharedState
+from runtime.agent_context import AgentContext
 
 
 class ResearchAgent(BaseAgent):
@@ -8,10 +8,10 @@ class ResearchAgent(BaseAgent):
     """
     async def _execute(
         self,
-        state: SharedState
+        context: AgentContext
     ):
-        state.research_result = (
-            f"Research about {state.query}"
+        context.state.research_result = (
+            f"Research about {context.state.query}"
         )
 
-        return state
+        return context
