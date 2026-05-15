@@ -3,14 +3,13 @@ import os
 
 from dotenv import load_dotenv
 
-from core.events import RuntimeEvent
+from agents.simple_agent import SimpleAgent
 from core.llm_client import LLMClient
 from core.memory import MemoryManager
 from core.tool_registry import ToolRegistry
-
-from agents.simple_agent import SimpleAgent
 from core.workflow import WorkflowGraph, WorkflowNode, WorkflowEdge
-
+from memory.shared_memory import SharedMemory
+from runtime.agent_context import AgentContext
 from tools.calculator_tool import CalculatorTool
 from workflows.investment_state import InvestmentState
 from workflows.nodes import research_node, analysis_node, report_node
@@ -101,6 +100,11 @@ async def build_workflow():
 
     state = InvestmentState(
         query="Should I invest in NVIDIA?"
+    )
+
+    agent_context = AgentContext(
+        state=state,
+        shared_memory=SharedMemory()
     )
 
     result = await graph.run(state)

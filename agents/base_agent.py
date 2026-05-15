@@ -1,7 +1,6 @@
-from observability.tracer import Tracer
+from runtime.agent_context import AgentContext
 from runtime.middleware.pipeline import MiddlewarePipeline
-from runtime.retry_policy import RetryPolicy
-from runtime.timeout import with_timeout
+from workflows.shared_state import SharedState
 
 
 class BaseAgent:
@@ -18,29 +17,15 @@ class BaseAgent:
         self.pipeline = pipeline
 
     async def run(self,
-                  state
+                  context: AgentContext
                   ):
-        # span = self.tracer.start_span(
-        #     self.name
-        # )
-        #
-        # result = await with_timeout(
-        #     self.retry_policy.execute(
-        #         lambda: self._execute(
-        #             state
-        #         )
-        #     ),
-        #     timeout=30
-        # )
-        #
-        # span.finish()
 
         result = await self.pipeline.execute(
-            state,
+            context,
             self._execute
         )
 
         return result
 
-    async def _execute(self, state):
+    async def _execute(self, state: SharedState):
         raise NotImplementedError

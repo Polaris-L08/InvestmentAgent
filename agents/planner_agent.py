@@ -1,18 +1,19 @@
 from agents.base_agent import BaseAgent
+from runtime.agent_context import AgentContext
 
 
 class PlannerAgent(BaseAgent):
 
     async def _execute(
         self,
-        state
+        context: AgentContext
     ):
 
-        state.plan = [
+        context.state.plan = [
             "research",
             "quant",
             "risk",
             "report"
         ]
 
-        return state
+        return context

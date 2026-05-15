@@ -251,3 +251,29 @@ Agent Runtime
 现有的流程驱动依然是函数的调用，灵活度不足。
 
 升级为事件驱动，从函数调用改为消息系统。
+
+## Stateful Multi-Agent Runtime & Shared Memory Architecture —— 有状态多 Agent Runtime 与共享记忆架构
+
+Shared Memory：多个 Agent 共享同一个状态空间。
+
+高级 AI 系统通常会有：Shared Cognitive Workspace（共享认知工作区） 例如：
+
+Blackboard Architecture（黑板架构）: 一个黑板 多个专家 共同写内容
+Shared Context
+Shared Memory
+Cognitive Workspace
+
+构建： Stateful Multi-Agent Runtime V1
+
+包括：
+
+ - SharedMemory
+ - SharedState
+ - Agent Coordination（Agent 协调）
+ - Shared Cognitive Workspace
+ - Stateful Agent Runtime
+
+这是AI Runtime 开始真正“协同智能化”的阶段。
+
+未来Agent不止依赖输入参数（payload）,还会依赖Runtime Context(memory trace workflow identity tools)
+

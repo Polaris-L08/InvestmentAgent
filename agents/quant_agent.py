@@ -1,4 +1,5 @@
 from agents.base_agent import BaseAgent
+from runtime.agent_context import AgentContext
 from workflows.shared_state import SharedState
 
 
@@ -8,8 +9,8 @@ class QuantAgent(BaseAgent):
     """
     async def _execute(
         self,
-        state: SharedState
+        context: AgentContext
     ):
-        state.quant_result = (
+        context.state.quant_result = (
             f"Backtest result: 18% CAGR"
         )

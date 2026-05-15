@@ -1,5 +1,3 @@
-from dataclasses import Field
-
 from runtime.middleware.base import Middleware
 
 
