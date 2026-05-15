@@ -226,3 +226,28 @@ WorkerRuntime
 
 ## Distributed AI Runtime & Worker Architecture —— 分布式 AI Runtime
 
+构建 Distributed Runtime V1
+
+包括：
+
+ - Task Queue
+ - Worker
+ - Task Dispatcher
+ - Distributed Execution
+ - Async Worker Loop
+
+```angular2html
+Workflow Runtime
+    ↓
+Task Queue
+    ↓
+Worker Runtime
+    ↓
+Agent Runtime
+```
+
+## Event Bus & Event-driven AI Runtime —— 事件驱动 AI Runtime
+
+现有的流程驱动依然是函数的调用，灵活度不足。
+
+升级为事件驱动，从函数调用改为消息系统。
